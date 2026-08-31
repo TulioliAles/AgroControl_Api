@@ -2,6 +2,7 @@ using AgroControl.Api.Contracts.Catalog;
 using AgroControl.Api.Extensions;
 using AgroControl.Application.Catalog.CreateAgriculturalInput;
 using AgroControl.Application.Catalog.GetAgriculturalInputs;
+using AgroControl.Application.Catalog.UpdateAgriculturalInput;
 using AgroControl.Application.Common;
 
 namespace AgroControl.Api.Endpoints;
@@ -33,6 +34,26 @@ public static class AgriculturalInputEndpoints
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict);
+
+        group.MapPut("/{id:guid}", UpdateAsync)
+            .WithName("UpdateAgriculturalInput")
+            .WithSummary("Updates an agricultural input")
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status409Conflict);
+
+        group.MapPatch("/{id:guid}/activate", ActivateAsync)
+            .WithName("ActivateAgriculturalInput")
+            .WithSummary("Activates an agricultural input")
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status404NotFound);
+
+        group.MapPatch("/{id:guid}/deactivate", DeactivateAsync)
+            .WithName("DeactivateAgriculturalInput")
+            .WithSummary("Deactivates an agricultural input")
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status404NotFound);
 
         return endpoints;
     }
@@ -83,14 +104,65 @@ public static class AgriculturalInputEndpoints
             var result = await handler.HandleAsync(command, cancellationToken);
 
             return result.IsSuccess
-                ? Results.Created(
-                    $"/api/agricultural-inputs/{result.Value.Id}",
-                    result.Value)
+                ? Results.Created($"/api/agricultural-inputs/{result.Value.Id}", result.Value)
                 : result.Error.ToProblemResult();
         }
         catch (ArgumentException exception)
         {
             return exception.ToValidationProblem();
         }
+    }
+
+    private static async Task<IResult> UpdateAsync(
+        Guid id,
+        UpdateAgriculturalInputRequest request,
+        UpdateAgriculturalInputHandler handler,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var result = await handler.HandleAsync(
+                new UpdateAgriculturalInputCommand(
+                    id,
+                    request.Name,
+                    request.CommercialName,
+                    request.Type,
+                    request.CategoryId,
+                    request.ManufacturerId,
+                    request.MeasurementUnitId),
+                cancellationToken);
+
+            return result.IsSuccess
+                ? Results.NoContent()
+                : result.Error.ToProblemResult();
+        }
+        catch (ArgumentException exception)
+        {
+            return exception.ToValidationProblem();
+        }
+    }
+
+    private static Task<IResult> ActivateAsync(
+        Guid id,
+        ChangeAgriculturalInputStatusHandler handler,
+        CancellationToken cancellationToken) =>
+        ChangeStatusAsync(id, true, handler, cancellationToken);
+
+    private static Task<IResult> DeactivateAsync(
+        Guid id,
+        ChangeAgriculturalInputStatusHandler handler,
+        CancellationToken cancellationToken) =>
+        ChangeStatusAsync(id, false, handler, cancellationToken);
+
+    private static async Task<IResult> ChangeStatusAsync(
+        Guid id,
+        bool activate,
+        ChangeAgriculturalInputStatusHandler handler,
+        CancellationToken cancellationToken)
+    {
+        var result = await handler.HandleAsync(id, activate, cancellationToken);
+        return result.IsSuccess
+            ? Results.NoContent()
+            : result.Error.ToProblemResult();
     }
 }

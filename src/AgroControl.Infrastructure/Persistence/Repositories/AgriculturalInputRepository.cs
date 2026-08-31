@@ -12,6 +12,11 @@ internal sealed class AgriculturalInputRepository(AgroControlDbContext dbContext
             .AsNoTracking()
             .SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
 
+    public Task<AgriculturalInput?> GetForUpdateByIdAsync(
+        Guid id,
+        CancellationToken cancellationToken = default) =>
+        dbContext.AgriculturalInputs.SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
+
     public async Task<(IReadOnlyList<AgriculturalInput> Items, int TotalCount)> ListAsync(
         int page,
         int pageSize,

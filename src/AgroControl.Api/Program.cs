@@ -4,6 +4,7 @@ using AgroControl.Api.Observability;
 using AgroControl.Application.Catalog.CreateAgriculturalInput;
 using AgroControl.Application.Catalog.CreateReferenceData;
 using AgroControl.Application.Catalog.GetAgriculturalInputs;
+using AgroControl.Application.Catalog.UpdateAgriculturalInput;
 using AgroControl.Infrastructure;
 using Serilog;
 
@@ -21,6 +22,8 @@ try
     builder.Services.AddScoped<CreateAgriculturalInputHandler>();
     builder.Services.AddScoped<GetAgriculturalInputByIdHandler>();
     builder.Services.AddScoped<ListAgriculturalInputsHandler>();
+    builder.Services.AddScoped<UpdateAgriculturalInputHandler>();
+    builder.Services.AddScoped<ChangeAgriculturalInputStatusHandler>();
     builder.Services.AddScoped<CreateInputCategoryHandler>();
     builder.Services.AddScoped<CreateManufacturerHandler>();
     builder.Services.AddScoped<CreateMeasurementUnitHandler>();

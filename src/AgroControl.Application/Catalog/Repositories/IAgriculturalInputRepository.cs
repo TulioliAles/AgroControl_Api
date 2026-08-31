@@ -8,6 +8,11 @@ public interface IAgriculturalInputRepository
         Guid id,
         CancellationToken cancellationToken = default);
 
+    Task<AgriculturalInput?> GetForUpdateByIdAsync(
+        Guid id,
+        CancellationToken cancellationToken = default) =>
+        GetByIdAsync(id, cancellationToken);
+
     Task<(IReadOnlyList<AgriculturalInput> Items, int TotalCount)> ListAsync(
         int page,
         int pageSize,

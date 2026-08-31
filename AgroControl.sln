@@ -1,0 +1,36 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgroControl.Domain", "src\AgroControl.Domain\AgroControl.Domain.csproj", "{760A71CA-DA64-4CB2-8C53-A402D6A2D1C8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgroControl.Application", "src\AgroControl.Application\AgroControl.Application.csproj", "{30186BD6-8CBA-4AD7-8332-0775EC9EF13D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgroControl.Infrastructure", "src\AgroControl.Infrastructure\AgroControl.Infrastructure.csproj", "{4BFEE92A-844C-4525-96E1-F2260DE124F2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgroControl.Api", "src\AgroControl.Api\AgroControl.Api.csproj", "{8E1DDAF7-2963-491C-B4B1-C5A445A89309}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{760A71CA-DA64-4CB2-8C53-A402D6A2D1C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{760A71CA-DA64-4CB2-8C53-A402D6A2D1C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{760A71CA-DA64-4CB2-8C53-A402D6A2D1C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{760A71CA-DA64-4CB2-8C53-A402D6A2D1C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{30186BD6-8CBA-4AD7-8332-0775EC9EF13D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30186BD6-8CBA-4AD7-8332-0775EC9EF13D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30186BD6-8CBA-4AD7-8332-0775EC9EF13D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30186BD6-8CBA-4AD7-8332-0775EC9EF13D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4BFEE92A-844C-4525-96E1-F2260DE124F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4BFEE92A-844C-4525-96E1-F2260DE124F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4BFEE92A-844C-4525-96E1-F2260DE124F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4BFEE92A-844C-4525-96E1-F2260DE124F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E1DDAF7-2963-491C-B4B1-C5A445A89309}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E1DDAF7-2963-491C-B4B1-C5A445A89309}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E1DDAF7-2963-491C-B4B1-C5A445A89309}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E1DDAF7-2963-491C-B4B1-C5A445A89309}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

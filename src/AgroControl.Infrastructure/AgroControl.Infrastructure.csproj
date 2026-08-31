@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>AgroControl.Infrastructure</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AgroControl.Application\AgroControl.Application.csproj" />
+    <ProjectReference Include="..\AgroControl.Domain\AgroControl.Domain.csproj" />
+  </ItemGroup>
+</Project>

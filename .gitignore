@@ -1,0 +1,40 @@
+## .NET
+bin/
+obj/
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Visual Studio Code
+.vscode/
+
+## Rider
+.idea/
+*.sln.iml
+
+## Test results and coverage
+TestResults/
+coverage/
+*.coverage
+*.coveragexml
+
+## Local configuration and secrets
+.env
+.env.*
+!.env.example
+appsettings.Development.local.json
+secrets.json
+
+## Docker local volumes
+.docker/
+docker-data/
+
+## Logs
+logs/
+*.log
+
+## OS
+.DS_Store
+Thumbs.db

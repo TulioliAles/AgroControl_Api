@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <RootNamespace>AgroControl.Api</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AgroControl.Application\AgroControl.Application.csproj" />
+    <ProjectReference Include="..\AgroControl.Infrastructure\AgroControl.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>

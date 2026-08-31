@@ -1,0 +1,94 @@
+using AgroControl.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+
+#nullable disable
+
+namespace AgroControl.Infrastructure.Persistence.Migrations;
+
+[DbContext(typeof(AgroControlDbContext))]
+partial class AgroControlDbContextModelSnapshot : ModelSnapshot
+{
+    protected override void BuildModel(ModelBuilder modelBuilder)
+    {
+        modelBuilder
+            .HasAnnotation("ProductVersion", "10.0.11")
+            .HasAnnotation("Relational:MaxIdentifierLength", 128);
+
+        SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+        modelBuilder.Entity("AgroControl.Domain.Catalog.InputCategory", b =>
+        {
+            b.Property<Guid>("Id").ValueGeneratedNever().HasColumnType("uniqueidentifier");
+            b.Property<string>("Description").HasMaxLength(500).HasColumnType("nvarchar(500)");
+            b.Property<bool>("IsActive").HasColumnType("bit");
+            b.Property<string>("Name").IsRequired().HasMaxLength(100).HasColumnType("nvarchar(100)");
+            b.HasKey("Id");
+            b.HasIndex("Name").IsUnique();
+            b.ToTable("InputCategories");
+        });
+
+        modelBuilder.Entity("AgroControl.Domain.Catalog.Manufacturer", b =>
+        {
+            b.Property<Guid>("Id").ValueGeneratedNever().HasColumnType("uniqueidentifier");
+            b.Property<bool>("IsActive").HasColumnType("bit");
+            b.Property<string>("Name").IsRequired().HasMaxLength(150).HasColumnType("nvarchar(150)");
+            b.HasKey("Id");
+            b.HasIndex("Name").IsUnique();
+            b.ToTable("Manufacturers");
+        });
+
+        modelBuilder.Entity("AgroControl.Domain.Catalog.MeasurementUnit", b =>
+        {
+            b.Property<Guid>("Id").ValueGeneratedNever().HasColumnType("uniqueidentifier");
+            b.Property<decimal>("ConversionFactor").HasPrecision(18, 6).HasColumnType("decimal(18,6)");
+            b.Property<bool>("IsActive").HasColumnType("bit");
+            b.Property<string>("Name").IsRequired().HasMaxLength(100).HasColumnType("nvarchar(100)");
+            b.Property<string>("Symbol").IsRequired().HasMaxLength(20).HasColumnType("nvarchar(20)");
+            b.HasKey("Id");
+            b.HasIndex("Symbol").IsUnique();
+            b.ToTable("MeasurementUnits");
+        });
+
+        modelBuilder.Entity("AgroControl.Domain.Catalog.AgriculturalInput", b =>
+        {
+            b.Property<Guid>("Id").ValueGeneratedNever().HasColumnType("uniqueidentifier");
+            b.Property<Guid>("CategoryId").HasColumnType("uniqueidentifier");
+            b.Property<string>("CommercialName").HasMaxLength(150).HasColumnType("nvarchar(150)");
+            b.Property<bool>("IsActive").HasColumnType("bit");
+            b.Property<Guid>("ManufacturerId").HasColumnType("uniqueidentifier");
+            b.Property<Guid>("MeasurementUnitId").HasColumnType("uniqueidentifier");
+            b.Property<string>("Name").IsRequired().HasMaxLength(150).HasColumnType("nvarchar(150)");
+            b.Property<int>("Type").HasColumnType("int");
+            b.HasKey("Id");
+            b.HasIndex("CategoryId");
+            b.HasIndex("ManufacturerId");
+            b.HasIndex("MeasurementUnitId");
+            b.HasIndex("Name").IsUnique();
+            b.ToTable("AgriculturalInputs");
+        });
+
+        modelBuilder.Entity("AgroControl.Domain.Catalog.AgriculturalInput", b =>
+        {
+            b.HasOne("AgroControl.Domain.Catalog.InputCategory", null)
+                .WithMany()
+                .HasForeignKey("CategoryId")
+                .OnDelete(DeleteBehavior.Restrict)
+                .IsRequired();
+
+            b.HasOne("AgroControl.Domain.Catalog.Manufacturer", null)
+                .WithMany()
+                .HasForeignKey("ManufacturerId")
+                .OnDelete(DeleteBehavior.Restrict)
+                .IsRequired();
+
+            b.HasOne("AgroControl.Domain.Catalog.MeasurementUnit", null)
+                .WithMany()
+                .HasForeignKey("MeasurementUnitId")
+                .OnDelete(DeleteBehavior.Restrict)
+                .IsRequired();
+        });
+    }
+}

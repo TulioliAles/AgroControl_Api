@@ -9,6 +9,9 @@ public static class ErrorExtensions
         var statusCode = error.Code switch
         {
             "Catalog.AgriculturalInput.NameAlreadyExists" => StatusCodes.Status409Conflict,
+            "Catalog.InputCategory.NameAlreadyExists" => StatusCodes.Status409Conflict,
+            "Catalog.Manufacturer.NameAlreadyExists" => StatusCodes.Status409Conflict,
+            "Catalog.MeasurementUnit.SymbolAlreadyExists" => StatusCodes.Status409Conflict,
             "Catalog.InputCategory.NotFound" => StatusCodes.Status404NotFound,
             "Catalog.Manufacturer.NotFound" => StatusCodes.Status404NotFound,
             "Catalog.MeasurementUnit.NotFound" => StatusCodes.Status404NotFound,
@@ -26,9 +29,15 @@ public static class ErrorExtensions
             statusCode: statusCode,
             title: title,
             detail: error.Description,
-            extensions: new Dictionary<string, object?>
-            {
-                ["code"] = error.Code
-            });
+            extensions: new Dictionary<string, object?> { ["code"] = error.Code });
+    }
+
+    public static IResult ToValidationProblem(this ArgumentException exception)
+    {
+        var field = exception.ParamName ?? "request";
+        return Results.ValidationProblem(new Dictionary<string, string[]>
+        {
+            [field] = [exception.Message]
+        });
     }
 }

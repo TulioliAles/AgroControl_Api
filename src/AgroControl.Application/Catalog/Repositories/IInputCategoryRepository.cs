@@ -4,7 +4,7 @@ namespace AgroControl.Application.Catalog.Repositories;
 
 public interface IInputCategoryRepository
 {
-    Task<InputCategory?> GetByIdAsync(
-        Guid id,
-        CancellationToken cancellationToken = default);
+    Task<InputCategory?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<bool> ExistsByNameAsync(string name, CancellationToken cancellationToken = default);
+    void Add(InputCategory category);
 }

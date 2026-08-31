@@ -8,6 +8,18 @@ public static class CatalogErrors
         "Catalog.AgriculturalInput.NameAlreadyExists",
         "An agricultural input with the same name already exists.");
 
+    public static readonly Error InputCategoryNameAlreadyExists = Error.Conflict(
+        "Catalog.InputCategory.NameAlreadyExists",
+        "An input category with the same name already exists.");
+
+    public static readonly Error ManufacturerNameAlreadyExists = Error.Conflict(
+        "Catalog.Manufacturer.NameAlreadyExists",
+        "A manufacturer with the same name already exists.");
+
+    public static readonly Error MeasurementUnitSymbolAlreadyExists = Error.Conflict(
+        "Catalog.MeasurementUnit.SymbolAlreadyExists",
+        "A measurement unit with the same symbol already exists.");
+
     public static readonly Error InputCategoryNotFound = Error.NotFound(
         "Catalog.InputCategory.NotFound",
         "The informed input category was not found or is inactive.");

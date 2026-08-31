@@ -9,4 +9,9 @@ internal sealed class ManufacturerRepository(AgroControlDbContext dbContext)
 {
     public Task<Manufacturer?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default) =>
         dbContext.Manufacturers.SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
+
+    public Task<bool> ExistsByNameAsync(string name, CancellationToken cancellationToken = default) =>
+        dbContext.Manufacturers.AnyAsync(x => x.Name == name.Trim(), cancellationToken);
+
+    public void Add(Manufacturer manufacturer) => dbContext.Manufacturers.Add(manufacturer);
 }

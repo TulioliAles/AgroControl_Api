@@ -8,6 +8,13 @@ public interface IAgriculturalInputRepository
         Guid id,
         CancellationToken cancellationToken = default);
 
+    Task<(IReadOnlyList<AgriculturalInput> Items, int TotalCount)> ListAsync(
+        int page,
+        int pageSize,
+        string? search,
+        bool? isActive,
+        CancellationToken cancellationToken = default);
+
     Task<bool> ExistsByNameAsync(
         string name,
         CancellationToken cancellationToken = default);

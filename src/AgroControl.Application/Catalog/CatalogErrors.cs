@@ -8,6 +8,10 @@ public static class CatalogErrors
         "Catalog.AgriculturalInput.NameAlreadyExists",
         "An agricultural input with the same name already exists.");
 
+    public static readonly Error AgriculturalInputNotFound = Error.NotFound(
+        "Catalog.AgriculturalInput.NotFound",
+        "The agricultural input was not found.");
+
     public static readonly Error InputCategoryNameAlreadyExists = Error.Conflict(
         "Catalog.InputCategory.NameAlreadyExists",
         "An input category with the same name already exists.");

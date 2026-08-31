@@ -12,6 +12,7 @@ public static class ErrorExtensions
             "Catalog.InputCategory.NameAlreadyExists" => StatusCodes.Status409Conflict,
             "Catalog.Manufacturer.NameAlreadyExists" => StatusCodes.Status409Conflict,
             "Catalog.MeasurementUnit.SymbolAlreadyExists" => StatusCodes.Status409Conflict,
+            "Catalog.AgriculturalInput.NotFound" => StatusCodes.Status404NotFound,
             "Catalog.InputCategory.NotFound" => StatusCodes.Status404NotFound,
             "Catalog.Manufacturer.NotFound" => StatusCodes.Status404NotFound,
             "Catalog.MeasurementUnit.NotFound" => StatusCodes.Status404NotFound,

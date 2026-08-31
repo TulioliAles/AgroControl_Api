@@ -1,5 +1,6 @@
 using AgroControl.Api.Contracts.Inventory;
 using AgroControl.Api.Extensions;
+using AgroControl.Api.Validation;
 using AgroControl.Application.Common;
 using AgroControl.Application.Inventory;
 using AgroControl.Domain.Inventory;
@@ -31,23 +32,26 @@ public static class StockLotEndpoints
             .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapPost("/", CreateAsync)
+            .Validate<CreateStockLotRequest>()
             .WithName("CreateStockLot")
             .Produces<CreatedStockLotResponse>(StatusCodes.Status201Created)
-            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict);
 
         group.MapPost("/{id:guid}/entries", RegisterEntryAsync)
+            .Validate<RecordStockMovementRequest>()
             .WithName("RegisterStockEntry")
             .Produces(StatusCodes.Status204NoContent)
-            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict);
 
         group.MapPost("/{id:guid}/exits", RegisterExitAsync)
+            .Validate<RecordStockMovementRequest>()
             .WithName("RegisterStockExit")
             .Produces(StatusCodes.Status204NoContent)
-            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict);
 
@@ -97,23 +101,16 @@ public static class StockLotEndpoints
         CreateStockLotHandler handler,
         CancellationToken cancellationToken)
     {
-        try
-        {
-            var result = await handler.HandleAsync(
-                new CreateStockLotCommand(
-                    request.AgriculturalInputId,
-                    request.LotNumber,
-                    request.ExpirationDate),
-                cancellationToken);
+        var result = await handler.HandleAsync(
+            new CreateStockLotCommand(
+                request.AgriculturalInputId,
+                request.LotNumber,
+                request.ExpirationDate),
+            cancellationToken);
 
-            return result.IsSuccess
-                ? Results.Created($"/api/stock-lots/{result.Value.Id}", result.Value)
-                : result.Error.ToProblemResult();
-        }
-        catch (ArgumentException exception)
-        {
-            return exception.ToValidationProblem();
-        }
+        return result.IsSuccess
+            ? Results.Created($"/api/stock-lots/{result.Value.Id}", result.Value)
+            : result.Error.ToProblemResult();
     }
 
     private static Task<IResult> RegisterEntryAsync(

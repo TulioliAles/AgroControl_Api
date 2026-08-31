@@ -1,4 +1,6 @@
+using AgroControl.Api.Contracts.Identity;
 using AgroControl.Api.Extensions;
+using AgroControl.Api.Validation;
 using AgroControl.Application.Identity;
 
 namespace AgroControl.Api.Endpoints;
@@ -11,17 +13,19 @@ public static class IdentityEndpoints
         var group = endpoints.MapGroup("/api/auth").WithTags("Authentication");
 
         group.MapPost("/register", RegisterAsync)
+            .Validate<RegisterRequest>()
             .WithName("RegisterUser")
             .AllowAnonymous()
             .Produces<RegisteredUserResponse>(StatusCodes.Status201Created)
-            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status409Conflict);
 
         group.MapPost("/login", LoginAsync)
+            .Validate<LoginRequest>()
             .WithName("Login")
             .AllowAnonymous()
             .Produces<AccessTokenResponse>(StatusCodes.Status200OK)
-            .ProducesProblem(StatusCodes.Status400BadRequest);
+            .ProducesValidationProblem();
 
         return endpoints;
     }
@@ -31,20 +35,13 @@ public static class IdentityEndpoints
         RegisterUserHandler handler,
         CancellationToken cancellationToken)
     {
-        try
-        {
-            var result = await handler.HandleAsync(
-                new RegisterUserCommand(request.Name, request.Email, request.Password),
-                cancellationToken);
+        var result = await handler.HandleAsync(
+            new RegisterUserCommand(request.Name, request.Email, request.Password),
+            cancellationToken);
 
-            return result.IsSuccess
-                ? Results.Created($"/api/users/{result.Value.Id}", result.Value)
-                : result.Error.ToProblemResult();
-        }
-        catch (ArgumentException exception)
-        {
-            return exception.ToValidationProblem();
-        }
+        return result.IsSuccess
+            ? Results.Created($"/api/users/{result.Value.Id}", result.Value)
+            : result.Error.ToProblemResult();
     }
 
     private static async Task<IResult> LoginAsync(
@@ -60,7 +57,4 @@ public static class IdentityEndpoints
             ? Results.Ok(result.Value)
             : result.Error.ToProblemResult();
     }
-
-    private sealed record RegisterRequest(string Name, string Email, string Password);
-    private sealed record LoginRequest(string Email, string Password);
 }

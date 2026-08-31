@@ -1,5 +1,6 @@
 using AgroControl.Api.Contracts.Catalog;
 using AgroControl.Api.Extensions;
+using AgroControl.Api.Validation;
 using AgroControl.Application.Catalog.CreateReferenceData;
 using AgroControl.Application.Catalog.MaintainReferenceData;
 
@@ -19,8 +20,14 @@ public static class CatalogReferenceDataEndpoints
     {
         group.MapGet("/", ListInputCategoriesAsync);
         group.MapGet("/{id:guid}", GetInputCategoryAsync).ProducesProblem(StatusCodes.Status404NotFound);
-        group.MapPost("/", CreateInputCategoryAsync).Produces<CreateCatalogReferenceResponse>(StatusCodes.Status201Created);
-        group.MapPut("/{id:guid}", UpdateInputCategoryAsync).Produces(StatusCodes.Status204NoContent);
+        group.MapPost("/", CreateInputCategoryAsync)
+            .Validate<CreateInputCategoryRequest>()
+            .Produces<CreateCatalogReferenceResponse>(StatusCodes.Status201Created)
+            .ProducesValidationProblem();
+        group.MapPut("/{id:guid}", UpdateInputCategoryAsync)
+            .Validate<UpdateInputCategoryRequest>()
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesValidationProblem();
         group.MapPatch("/{id:guid}/activate", ActivateInputCategoryAsync).Produces(StatusCodes.Status204NoContent);
         group.MapPatch("/{id:guid}/deactivate", DeactivateInputCategoryAsync).Produces(StatusCodes.Status204NoContent);
     }
@@ -29,8 +36,14 @@ public static class CatalogReferenceDataEndpoints
     {
         group.MapGet("/", ListManufacturersAsync);
         group.MapGet("/{id:guid}", GetManufacturerAsync).ProducesProblem(StatusCodes.Status404NotFound);
-        group.MapPost("/", CreateManufacturerAsync).Produces<CreateCatalogReferenceResponse>(StatusCodes.Status201Created);
-        group.MapPut("/{id:guid}", UpdateManufacturerAsync).Produces(StatusCodes.Status204NoContent);
+        group.MapPost("/", CreateManufacturerAsync)
+            .Validate<CreateManufacturerRequest>()
+            .Produces<CreateCatalogReferenceResponse>(StatusCodes.Status201Created)
+            .ProducesValidationProblem();
+        group.MapPut("/{id:guid}", UpdateManufacturerAsync)
+            .Validate<UpdateManufacturerRequest>()
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesValidationProblem();
         group.MapPatch("/{id:guid}/activate", ActivateManufacturerAsync).Produces(StatusCodes.Status204NoContent);
         group.MapPatch("/{id:guid}/deactivate", DeactivateManufacturerAsync).Produces(StatusCodes.Status204NoContent);
     }
@@ -39,8 +52,14 @@ public static class CatalogReferenceDataEndpoints
     {
         group.MapGet("/", ListMeasurementUnitsAsync);
         group.MapGet("/{id:guid}", GetMeasurementUnitAsync).ProducesProblem(StatusCodes.Status404NotFound);
-        group.MapPost("/", CreateMeasurementUnitAsync).Produces<CreateCatalogReferenceResponse>(StatusCodes.Status201Created);
-        group.MapPut("/{id:guid}", UpdateMeasurementUnitAsync).Produces(StatusCodes.Status204NoContent);
+        group.MapPost("/", CreateMeasurementUnitAsync)
+            .Validate<CreateMeasurementUnitRequest>()
+            .Produces<CreateCatalogReferenceResponse>(StatusCodes.Status201Created)
+            .ProducesValidationProblem();
+        group.MapPut("/{id:guid}", UpdateMeasurementUnitAsync)
+            .Validate<UpdateMeasurementUnitRequest>()
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesValidationProblem();
         group.MapPatch("/{id:guid}/activate", ActivateMeasurementUnitAsync).Produces(StatusCodes.Status204NoContent);
         group.MapPatch("/{id:guid}/deactivate", DeactivateMeasurementUnitAsync).Produces(StatusCodes.Status204NoContent);
     }
@@ -59,12 +78,8 @@ public static class CatalogReferenceDataEndpoints
 
     private static async Task<IResult> UpdateInputCategoryAsync(Guid id, UpdateInputCategoryRequest request, InputCategoryMaintenanceHandler handler, CancellationToken ct)
     {
-        try
-        {
-            var result = await handler.UpdateAsync(new(id, request.Name, request.Description), ct);
-            return result.IsSuccess ? Results.NoContent() : result.Error.ToProblemResult();
-        }
-        catch (ArgumentException ex) { return ex.ToValidationProblem(); }
+        var result = await handler.UpdateAsync(new(id, request.Name, request.Description), ct);
+        return result.IsSuccess ? Results.NoContent() : result.Error.ToProblemResult();
     }
 
     private static Task<IResult> ActivateInputCategoryAsync(Guid id, InputCategoryMaintenanceHandler handler, CancellationToken ct) => ChangeStatusAsync(handler.ActivateAsync(id, ct));
@@ -81,12 +96,8 @@ public static class CatalogReferenceDataEndpoints
 
     private static async Task<IResult> UpdateManufacturerAsync(Guid id, UpdateManufacturerRequest request, ManufacturerMaintenanceHandler handler, CancellationToken ct)
     {
-        try
-        {
-            var result = await handler.UpdateAsync(new(id, request.Name, request.RegistrationNumber), ct);
-            return result.IsSuccess ? Results.NoContent() : result.Error.ToProblemResult();
-        }
-        catch (ArgumentException ex) { return ex.ToValidationProblem(); }
+        var result = await handler.UpdateAsync(new(id, request.Name, request.RegistrationNumber), ct);
+        return result.IsSuccess ? Results.NoContent() : result.Error.ToProblemResult();
     }
 
     private static Task<IResult> ActivateManufacturerAsync(Guid id, ManufacturerMaintenanceHandler handler, CancellationToken ct) => ChangeStatusAsync(handler.ActivateAsync(id, ct));
@@ -103,12 +114,8 @@ public static class CatalogReferenceDataEndpoints
 
     private static async Task<IResult> UpdateMeasurementUnitAsync(Guid id, UpdateMeasurementUnitRequest request, MeasurementUnitMaintenanceHandler handler, CancellationToken ct)
     {
-        try
-        {
-            var result = await handler.UpdateAsync(new(id, request.Name, request.Symbol, request.ConversionFactor), ct);
-            return result.IsSuccess ? Results.NoContent() : result.Error.ToProblemResult();
-        }
-        catch (ArgumentException ex) { return ex.ToValidationProblem(); }
+        var result = await handler.UpdateAsync(new(id, request.Name, request.Symbol, request.ConversionFactor), ct);
+        return result.IsSuccess ? Results.NoContent() : result.Error.ToProblemResult();
     }
 
     private static Task<IResult> ActivateMeasurementUnitAsync(Guid id, MeasurementUnitMaintenanceHandler handler, CancellationToken ct) => ChangeStatusAsync(handler.ActivateAsync(id, ct));
@@ -122,31 +129,19 @@ public static class CatalogReferenceDataEndpoints
 
     private static async Task<IResult> CreateInputCategoryAsync(CreateInputCategoryRequest request, CreateInputCategoryHandler handler, CancellationToken ct)
     {
-        try
-        {
-            var result = await handler.HandleAsync(new(request.Name, request.Description), ct);
-            return result.IsSuccess ? Results.Created($"/api/input-categories/{result.Value.Id}", result.Value) : result.Error.ToProblemResult();
-        }
-        catch (ArgumentException ex) { return ex.ToValidationProblem(); }
+        var result = await handler.HandleAsync(new(request.Name, request.Description), ct);
+        return result.IsSuccess ? Results.Created($"/api/input-categories/{result.Value.Id}", result.Value) : result.Error.ToProblemResult();
     }
 
     private static async Task<IResult> CreateManufacturerAsync(CreateManufacturerRequest request, CreateManufacturerHandler handler, CancellationToken ct)
     {
-        try
-        {
-            var result = await handler.HandleAsync(new(request.Name, request.RegistrationNumber), ct);
-            return result.IsSuccess ? Results.Created($"/api/manufacturers/{result.Value.Id}", result.Value) : result.Error.ToProblemResult();
-        }
-        catch (ArgumentException ex) { return ex.ToValidationProblem(); }
+        var result = await handler.HandleAsync(new(request.Name, request.RegistrationNumber), ct);
+        return result.IsSuccess ? Results.Created($"/api/manufacturers/{result.Value.Id}", result.Value) : result.Error.ToProblemResult();
     }
 
     private static async Task<IResult> CreateMeasurementUnitAsync(CreateMeasurementUnitRequest request, CreateMeasurementUnitHandler handler, CancellationToken ct)
     {
-        try
-        {
-            var result = await handler.HandleAsync(new(request.Name, request.Symbol, request.ConversionFactor), ct);
-            return result.IsSuccess ? Results.Created($"/api/measurement-units/{result.Value.Id}", result.Value) : result.Error.ToProblemResult();
-        }
-        catch (ArgumentException ex) { return ex.ToValidationProblem(); }
+        var result = await handler.HandleAsync(new(request.Name, request.Symbol, request.ConversionFactor), ct);
+        return result.IsSuccess ? Results.Created($"/api/measurement-units/{result.Value.Id}", result.Value) : result.Error.ToProblemResult();
     }
 }

@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text.Json;
 using AgroControl.Api.IntegrationTests.Infrastructure;
 
 namespace AgroControl.Api.IntegrationTests.Identity;
@@ -46,6 +47,25 @@ public sealed class AuthenticationTests(AgroControlApiFactory factory)
 
         var protectedResponse = await anonymousClient.GetAsync("/api/agricultural-inputs");
         Assert.Equal(HttpStatusCode.OK, protectedResponse.StatusCode);
+    }
+
+    [Fact]
+    public async Task Register_WithInvalidRequest_ShouldReturnValidationProblem()
+    {
+        using var anonymousClient = factory.CreateClient();
+
+        var response = await anonymousClient.PostAsJsonAsync(
+            "/api/auth/register",
+            new { name = "", email = "invalid-email", password = "123" });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal("application/problem+json", response.Content.Headers.ContentType?.MediaType);
+
+        using var payload = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        var errors = payload.RootElement.GetProperty("errors");
+        Assert.True(errors.TryGetProperty("name", out _));
+        Assert.True(errors.TryGetProperty("email", out _));
+        Assert.True(errors.TryGetProperty("password", out _));
     }
 
     [Fact]

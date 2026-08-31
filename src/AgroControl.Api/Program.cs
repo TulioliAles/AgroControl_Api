@@ -2,6 +2,7 @@ using AgroControl.Api.Authentication;
 using AgroControl.Api.Endpoints;
 using AgroControl.Api.Errors;
 using AgroControl.Api.Observability;
+using AgroControl.Api.Validation;
 using AgroControl.Application.Catalog.CreateAgriculturalInput;
 using AgroControl.Application.Catalog.CreateReferenceData;
 using AgroControl.Application.Catalog.GetAgriculturalInputs;
@@ -10,6 +11,7 @@ using AgroControl.Application.Catalog.UpdateAgriculturalInput;
 using AgroControl.Application.Identity;
 using AgroControl.Application.Inventory;
 using AgroControl.Infrastructure;
+using FluentValidation;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateBootstrapLogger();
@@ -24,6 +26,7 @@ try
     builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
     builder.Services.AddHealthChecks();
     builder.Services.AddJwtAuthentication(builder.Configuration);
+    builder.Services.AddValidatorsFromAssemblyContaining<RegisterRequestValidator>();
     builder.Services.AddScoped<RegisterUserHandler>();
     builder.Services.AddScoped<LoginHandler>();
     builder.Services.AddScoped<CreateAgriculturalInputHandler>();

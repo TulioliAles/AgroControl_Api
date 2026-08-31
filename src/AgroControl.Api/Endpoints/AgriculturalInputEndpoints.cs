@@ -1,5 +1,6 @@
 using AgroControl.Api.Contracts.Catalog;
 using AgroControl.Api.Extensions;
+using AgroControl.Api.Validation;
 using AgroControl.Application.Catalog.CreateAgriculturalInput;
 using AgroControl.Application.Catalog.GetAgriculturalInputs;
 using AgroControl.Application.Catalog.UpdateAgriculturalInput;
@@ -29,18 +30,20 @@ public static class AgriculturalInputEndpoints
             .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapPost("/", CreateAsync)
+            .Validate<CreateAgriculturalInputRequest>()
             .WithName("CreateAgriculturalInput")
             .WithSummary("Creates a new agricultural input")
             .Produces<CreateAgriculturalInputResponse>(StatusCodes.Status201Created)
-            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict);
 
         group.MapPut("/{id:guid}", UpdateAsync)
+            .Validate<UpdateAgriculturalInputRequest>()
             .WithName("UpdateAgriculturalInput")
             .WithSummary("Updates an agricultural input")
             .Produces(StatusCodes.Status204NoContent)
-            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict);
 
@@ -81,7 +84,6 @@ public static class AgriculturalInputEndpoints
         CancellationToken cancellationToken)
     {
         var result = await handler.HandleAsync(id, cancellationToken);
-
         return result.IsSuccess
             ? Results.Ok(result.Value)
             : result.Error.ToProblemResult();
@@ -92,26 +94,18 @@ public static class AgriculturalInputEndpoints
         CreateAgriculturalInputHandler handler,
         CancellationToken cancellationToken)
     {
-        try
-        {
-            var command = new CreateAgriculturalInputCommand(
-                request.Name,
-                request.CommercialName,
-                request.Type,
-                request.CategoryId,
-                request.ManufacturerId,
-                request.MeasurementUnitId);
+        var command = new CreateAgriculturalInputCommand(
+            request.Name,
+            request.CommercialName,
+            request.Type,
+            request.CategoryId,
+            request.ManufacturerId,
+            request.MeasurementUnitId);
 
-            var result = await handler.HandleAsync(command, cancellationToken);
-
-            return result.IsSuccess
-                ? Results.Created($"/api/agricultural-inputs/{result.Value.Id}", result.Value)
-                : result.Error.ToProblemResult();
-        }
-        catch (ArgumentException exception)
-        {
-            return exception.ToValidationProblem();
-        }
+        var result = await handler.HandleAsync(command, cancellationToken);
+        return result.IsSuccess
+            ? Results.Created($"/api/agricultural-inputs/{result.Value.Id}", result.Value)
+            : result.Error.ToProblemResult();
     }
 
     private static async Task<IResult> UpdateAsync(
@@ -120,27 +114,20 @@ public static class AgriculturalInputEndpoints
         UpdateAgriculturalInputHandler handler,
         CancellationToken cancellationToken)
     {
-        try
-        {
-            var result = await handler.HandleAsync(
-                new UpdateAgriculturalInputCommand(
-                    id,
-                    request.Name,
-                    request.CommercialName,
-                    request.Type,
-                    request.CategoryId,
-                    request.ManufacturerId,
-                    request.MeasurementUnitId),
-                cancellationToken);
+        var result = await handler.HandleAsync(
+            new UpdateAgriculturalInputCommand(
+                id,
+                request.Name,
+                request.CommercialName,
+                request.Type,
+                request.CategoryId,
+                request.ManufacturerId,
+                request.MeasurementUnitId),
+            cancellationToken);
 
-            return result.IsSuccess
-                ? Results.NoContent()
-                : result.Error.ToProblemResult();
-        }
-        catch (ArgumentException exception)
-        {
-            return exception.ToValidationProblem();
-        }
+        return result.IsSuccess
+            ? Results.NoContent()
+            : result.Error.ToProblemResult();
     }
 
     private static Task<IResult> ActivateAsync(

@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\AgroControl.Application\AgroControl.Application.csproj" />
+    <ProjectReference Include="..\AgroControl.Domain\AgroControl.Domain.csproj" />
+  </ItemGroup>
+</Project>

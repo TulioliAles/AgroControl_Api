@@ -131,13 +131,11 @@ public sealed class CreateAgriculturalInputHandlerTests
         public bool NameExists { get; set; }
         public AgriculturalInput? AddedInput { get; private set; }
 
-        public Task<AgriculturalInput?> GetByIdAsync(
-            Guid id,
-            CancellationToken cancellationToken = default) => Task.FromResult<AgriculturalInput?>(null);
+        public Task<AgriculturalInput?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default) =>
+            Task.FromResult<AgriculturalInput?>(null);
 
-        public Task<bool> ExistsByNameAsync(
-            string name,
-            CancellationToken cancellationToken = default) => Task.FromResult(NameExists);
+        public Task<bool> ExistsByNameAsync(string name, CancellationToken cancellationToken = default) =>
+            Task.FromResult(NameExists);
 
         public void Add(AgriculturalInput agriculturalInput) => AddedInput = agriculturalInput;
     }
@@ -146,27 +144,39 @@ public sealed class CreateAgriculturalInputHandlerTests
     {
         public InputCategory? Entity { get; set; } = entity;
 
-        public Task<InputCategory?> GetByIdAsync(
-            Guid id,
-            CancellationToken cancellationToken = default) => Task.FromResult(Entity);
+        public Task<InputCategory?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default) =>
+            Task.FromResult(Entity);
+
+        public Task<bool> ExistsByNameAsync(string name, CancellationToken cancellationToken = default) =>
+            Task.FromResult(false);
+
+        public void Add(InputCategory category) => throw new NotSupportedException();
     }
 
     private sealed class FakeManufacturerRepository(Manufacturer? entity) : IManufacturerRepository
     {
         public Manufacturer? Entity { get; set; } = entity;
 
-        public Task<Manufacturer?> GetByIdAsync(
-            Guid id,
-            CancellationToken cancellationToken = default) => Task.FromResult(Entity);
+        public Task<Manufacturer?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default) =>
+            Task.FromResult(Entity);
+
+        public Task<bool> ExistsByNameAsync(string name, CancellationToken cancellationToken = default) =>
+            Task.FromResult(false);
+
+        public void Add(Manufacturer manufacturer) => throw new NotSupportedException();
     }
 
     private sealed class FakeMeasurementUnitRepository(MeasurementUnit? entity) : IMeasurementUnitRepository
     {
         public MeasurementUnit? Entity { get; set; } = entity;
 
-        public Task<MeasurementUnit?> GetByIdAsync(
-            Guid id,
-            CancellationToken cancellationToken = default) => Task.FromResult(Entity);
+        public Task<MeasurementUnit?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default) =>
+            Task.FromResult(Entity);
+
+        public Task<bool> ExistsBySymbolAsync(string symbol, CancellationToken cancellationToken = default) =>
+            Task.FromResult(false);
+
+        public void Add(MeasurementUnit measurementUnit) => throw new NotSupportedException();
     }
 
     private sealed class FakeUnitOfWork : IUnitOfWork

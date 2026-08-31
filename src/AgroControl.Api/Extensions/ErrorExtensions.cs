@@ -15,6 +15,7 @@ public static class ErrorExtensions
             "Inventory.StockLot.AlreadyExists" => StatusCodes.Status409Conflict,
             "Inventory.Movement.InsufficientStock" => StatusCodes.Status409Conflict,
             "Inventory.StockLot.Inactive" => StatusCodes.Status409Conflict,
+            "Identity.User.EmailAlreadyExists" => StatusCodes.Status409Conflict,
             "Catalog.AgriculturalInput.NotFound" => StatusCodes.Status404NotFound,
             "Catalog.InputCategory.NotFound" => StatusCodes.Status404NotFound,
             "Catalog.Manufacturer.NotFound" => StatusCodes.Status404NotFound,

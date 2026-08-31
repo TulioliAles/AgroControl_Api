@@ -13,7 +13,8 @@ public static class StockLotEndpoints
     {
         var group = endpoints
             .MapGroup("/api/stock-lots")
-            .WithTags("Stock Lots");
+            .WithTags("Stock Lots")
+            .RequireAuthorization();
 
         group.MapGet("/", ListAsync)
             .WithName("ListStockLots")

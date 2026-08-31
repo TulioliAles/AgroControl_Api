@@ -1,5 +1,6 @@
 using AgroControl.Application.Abstractions.Data;
 using AgroControl.Domain.Catalog;
+using AgroControl.Domain.Identity;
 using AgroControl.Domain.Inventory;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +15,7 @@ public sealed class AgroControlDbContext(DbContextOptions<AgroControlDbContext> 
     public DbSet<MeasurementUnit> MeasurementUnits => Set<MeasurementUnit>();
     public DbSet<StockLot> StockLots => Set<StockLot>();
     public DbSet<StockMovement> StockMovements => Set<StockMovement>();
+    public DbSet<User> Users => Set<User>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

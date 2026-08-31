@@ -1,3 +1,5 @@
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using AgroControl.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -10,6 +12,8 @@ namespace AgroControl.Api.IntegrationTests.Infrastructure;
 
 public sealed class AgroControlApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
+    private const string TestJwtKey = "integration-tests-only-secret-key-with-32-characters";
+
     private readonly MsSqlContainer _database = new MsSqlBuilder(
         "mcr.microsoft.com/mssql/server:2022-CU14-ubuntu-22.04")
         .Build();
@@ -23,7 +27,11 @@ public sealed class AgroControlApiFactory : WebApplicationFactory<Program>, IAsy
         {
             configuration.AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["ConnectionStrings:AgroControlDatabase"] = _database.GetConnectionString()
+                ["ConnectionStrings:AgroControlDatabase"] = _database.GetConnectionString(),
+                ["Jwt:Issuer"] = "AgroControl.Api.IntegrationTests",
+                ["Jwt:Audience"] = "AgroControl.Api.IntegrationTests.Client",
+                ["Jwt:Key"] = TestJwtKey,
+                ["Jwt:ExpirationMinutes"] = "60"
             });
         });
     }
@@ -36,9 +44,30 @@ public sealed class AgroControlApiFactory : WebApplicationFactory<Program>, IAsy
             AllowAutoRedirect = false
         });
 
-        using var scope = Services.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<AgroControlDbContext>();
-        await dbContext.Database.MigrateAsync();
+        using (var scope = Services.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<AgroControlDbContext>();
+            await dbContext.Database.MigrateAsync();
+        }
+
+        var suffix = Guid.NewGuid().ToString("N");
+        var email = $"integration-{suffix}@agrocontrol.test";
+        var password = "Integration#123";
+
+        var registration = await Client.PostAsJsonAsync(
+            "/api/auth/register",
+            new { name = "Integration Tests", email, password });
+        registration.EnsureSuccessStatusCode();
+
+        var login = await Client.PostAsJsonAsync(
+            "/api/auth/login",
+            new { email, password });
+        login.EnsureSuccessStatusCode();
+
+        var token = await login.Content.ReadFromJsonAsync<AccessTokenPayload>();
+        ArgumentNullException.ThrowIfNull(token);
+        Client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", token.AccessToken);
     }
 
     async Task IAsyncLifetime.DisposeAsync()
@@ -55,4 +84,6 @@ public sealed class AgroControlApiFactory : WebApplicationFactory<Program>, IAsy
         var dbContext = scope.ServiceProvider.GetRequiredService<AgroControlDbContext>();
         return await action(dbContext);
     }
+
+    private sealed record AccessTokenPayload(string AccessToken, DateTimeOffset ExpiresAt);
 }

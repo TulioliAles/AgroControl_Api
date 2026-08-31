@@ -1,6 +1,8 @@
 using AgroControl.Application.Abstractions.Data;
 using AgroControl.Application.Catalog.Repositories;
+using AgroControl.Application.Identity;
 using AgroControl.Application.Inventory;
+using AgroControl.Infrastructure.Identity;
 using AgroControl.Infrastructure.Persistence;
 using AgroControl.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -32,6 +34,8 @@ public static class DependencyInjection
         services.AddScoped<IManufacturerRepository, ManufacturerRepository>();
         services.AddScoped<IMeasurementUnitRepository, MeasurementUnitRepository>();
         services.AddScoped<IStockLotRepository, StockLotRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddSingleton<IPasswordHasher, Pbkdf2PasswordHasher>();
 
         return services;
     }

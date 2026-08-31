@@ -1,3 +1,4 @@
+using AgroControl.Api.Authentication;
 using AgroControl.Api.Endpoints;
 using AgroControl.Api.Errors;
 using AgroControl.Api.Observability;
@@ -6,6 +7,7 @@ using AgroControl.Application.Catalog.CreateReferenceData;
 using AgroControl.Application.Catalog.GetAgriculturalInputs;
 using AgroControl.Application.Catalog.MaintainReferenceData;
 using AgroControl.Application.Catalog.UpdateAgriculturalInput;
+using AgroControl.Application.Identity;
 using AgroControl.Application.Inventory;
 using AgroControl.Infrastructure;
 using Serilog;
@@ -21,6 +23,9 @@ try
     builder.Services.AddProblemDetails();
     builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
     builder.Services.AddHealthChecks();
+    builder.Services.AddJwtAuthentication(builder.Configuration);
+    builder.Services.AddScoped<RegisterUserHandler>();
+    builder.Services.AddScoped<LoginHandler>();
     builder.Services.AddScoped<CreateAgriculturalInputHandler>();
     builder.Services.AddScoped<GetAgriculturalInputByIdHandler>();
     builder.Services.AddScoped<ListAgriculturalInputsHandler>();
@@ -41,14 +46,17 @@ try
 
     if (app.Environment.IsDevelopment())
     {
-        app.MapOpenApi();
+        app.MapOpenApi().AllowAnonymous();
     }
 
     app.UseObservability();
     app.UseExceptionHandler();
     app.UseHttpsRedirection();
+    app.UseAuthentication();
+    app.UseAuthorization();
 
-    app.MapHealthChecks("/health");
+    app.MapHealthChecks("/health").AllowAnonymous();
+    app.MapIdentityEndpoints();
     app.MapAgriculturalInputEndpoints();
     app.MapCatalogReferenceDataEndpoints();
     app.MapStockLotEndpoints();
@@ -63,7 +71,7 @@ try
         service = "AgroControl.Api",
         status = "running",
         version = "v1"
-    }));
+    })).AllowAnonymous();
 
     Log.Information("Starting AgroControl API");
     app.Run();

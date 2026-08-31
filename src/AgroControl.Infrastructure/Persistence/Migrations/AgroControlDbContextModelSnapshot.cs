@@ -70,6 +70,19 @@ partial class AgroControlDbContextModelSnapshot : ModelSnapshot
             b.ToTable("AgriculturalInputs");
         });
 
+        modelBuilder.Entity("AgroControl.Domain.Identity.User", b =>
+        {
+            b.Property<Guid>("Id").ValueGeneratedNever().HasColumnType("uniqueidentifier");
+            b.Property<string>("Email").IsRequired().HasMaxLength(254).HasColumnType("nvarchar(254)");
+            b.Property<bool>("IsActive").HasColumnType("bit");
+            b.Property<string>("Name").IsRequired().HasMaxLength(150).HasColumnType("nvarchar(150)");
+            b.Property<string>("PasswordHash").IsRequired().HasMaxLength(1000).HasColumnType("nvarchar(1000)");
+            b.Property<string>("Role").IsRequired().HasMaxLength(50).HasColumnType("nvarchar(50)");
+            b.HasKey("Id");
+            b.HasIndex("Email").IsUnique();
+            b.ToTable("Users");
+        });
+
         modelBuilder.Entity("AgroControl.Domain.Inventory.StockLot", b =>
         {
             b.Property<Guid>("Id").ValueGeneratedNever().HasColumnType("uniqueidentifier");

@@ -14,7 +14,8 @@ public static class AgriculturalInputEndpoints
     {
         var group = endpoints
             .MapGroup("/api/agricultural-inputs")
-            .WithTags("Agricultural Inputs");
+            .WithTags("Agricultural Inputs")
+            .RequireAuthorization();
 
         group.MapGet("/", ListAsync)
             .WithName("ListAgriculturalInputs")

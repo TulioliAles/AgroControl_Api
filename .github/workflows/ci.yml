@@ -1,0 +1,76 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  NUGET_XMLDOC_MODE: skip
+
+jobs:
+  build-and-test:
+    name: Build and test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.100
+
+      - name: Display .NET information
+        run: dotnet --info
+
+      - name: Restore dependencies
+        run: dotnet restore AgroControl.sln
+
+      - name: Build solution
+        run: dotnet build AgroControl.sln --configuration Release --no-restore
+
+      - name: Run domain unit tests
+        run: >-
+          dotnet test tests/AgroControl.Domain.UnitTests/AgroControl.Domain.UnitTests.csproj
+          --configuration Release
+          --no-build
+          --no-restore
+          --logger "trx;LogFileName=domain-unit-tests.trx"
+          --results-directory TestResults/Domain
+
+      - name: Run application unit tests
+        run: >-
+          dotnet test tests/AgroControl.Application.UnitTests/AgroControl.Application.UnitTests.csproj
+          --configuration Release
+          --no-build
+          --no-restore
+          --logger "trx;LogFileName=application-unit-tests.trx"
+          --results-directory TestResults/Application
+
+      - name: Verify Docker availability
+        run: docker info
+
+      - name: Run API integration tests
+        run: >-
+          dotnet test tests/AgroControl.Api.IntegrationTests/AgroControl.Api.IntegrationTests.csproj
+          --configuration Release
+          --no-build
+          --no-restore
+          --logger "trx;LogFileName=api-integration-tests.trx"
+          --results-directory TestResults/Integration

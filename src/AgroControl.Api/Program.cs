@@ -1,39 +1,58 @@
 using AgroControl.Api.Endpoints;
+using AgroControl.Api.Observability;
 using AgroControl.Application.Catalog.CreateAgriculturalInput;
 using AgroControl.Application.Catalog.CreateReferenceData;
 using AgroControl.Infrastructure;
+using Serilog;
 
-var builder = WebApplication.CreateBuilder(args);
+Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateBootstrapLogger();
 
-builder.Services.AddOpenApi();
-builder.Services.AddProblemDetails();
-builder.Services.AddHealthChecks();
-builder.Services.AddScoped<CreateAgriculturalInputHandler>();
-builder.Services.AddScoped<CreateInputCategoryHandler>();
-builder.Services.AddScoped<CreateManufacturerHandler>();
-builder.Services.AddScoped<CreateMeasurementUnitHandler>();
-builder.Services.AddInfrastructure(builder.Configuration);
-
-var app = builder.Build();
-
-if (app.Environment.IsDevelopment())
+try
 {
-    app.MapOpenApi();
+    var builder = WebApplication.CreateBuilder(args);
+    builder.AddObservability();
+
+    builder.Services.AddOpenApi();
+    builder.Services.AddProblemDetails();
+    builder.Services.AddHealthChecks();
+    builder.Services.AddScoped<CreateAgriculturalInputHandler>();
+    builder.Services.AddScoped<CreateInputCategoryHandler>();
+    builder.Services.AddScoped<CreateManufacturerHandler>();
+    builder.Services.AddScoped<CreateMeasurementUnitHandler>();
+    builder.Services.AddInfrastructure(builder.Configuration);
+
+    var app = builder.Build();
+
+    if (app.Environment.IsDevelopment())
+    {
+        app.MapOpenApi();
+    }
+
+    app.UseObservability();
+    app.UseExceptionHandler();
+    app.UseHttpsRedirection();
+
+    app.MapHealthChecks("/health");
+    app.MapAgriculturalInputEndpoints();
+    app.MapCatalogReferenceDataEndpoints();
+    app.MapGet("/", () => Results.Ok(new
+    {
+        service = "AgroControl.Api",
+        status = "running",
+        version = "v1"
+    }));
+
+    Log.Information("Starting AgroControl API");
+    app.Run();
 }
-
-app.UseExceptionHandler();
-app.UseHttpsRedirection();
-
-app.MapHealthChecks("/health");
-app.MapAgriculturalInputEndpoints();
-app.MapCatalogReferenceDataEndpoints();
-app.MapGet("/", () => Results.Ok(new
+catch (Exception exception)
 {
-    service = "AgroControl.Api",
-    status = "running",
-    version = "v1"
-}));
-
-app.Run();
+    Log.Fatal(exception, "AgroControl API terminated unexpectedly");
+    throw;
+}
+finally
+{
+    Log.CloseAndFlush();
+}
 
 public partial class Program;

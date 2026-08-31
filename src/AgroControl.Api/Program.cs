@@ -1,4 +1,5 @@
 using AgroControl.Api.Endpoints;
+using AgroControl.Api.Errors;
 using AgroControl.Api.Observability;
 using AgroControl.Application.Catalog.CreateAgriculturalInput;
 using AgroControl.Application.Catalog.CreateReferenceData;
@@ -14,6 +15,7 @@ try
 
     builder.Services.AddOpenApi();
     builder.Services.AddProblemDetails();
+    builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
     builder.Services.AddHealthChecks();
     builder.Services.AddScoped<CreateAgriculturalInputHandler>();
     builder.Services.AddScoped<CreateInputCategoryHandler>();
@@ -35,6 +37,12 @@ try
     app.MapHealthChecks("/health");
     app.MapAgriculturalInputEndpoints();
     app.MapCatalogReferenceDataEndpoints();
+
+    if (app.Environment.IsEnvironment("IntegrationTests"))
+    {
+        app.MapIntegrationTestEndpoints();
+    }
+
     app.MapGet("/", () => Results.Ok(new
     {
         service = "AgroControl.Api",

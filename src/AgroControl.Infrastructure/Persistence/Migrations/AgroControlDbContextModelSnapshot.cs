@@ -2,7 +2,6 @@ using AgroControl.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
@@ -35,6 +34,7 @@ partial class AgroControlDbContextModelSnapshot : ModelSnapshot
             b.Property<Guid>("Id").ValueGeneratedNever().HasColumnType("uniqueidentifier");
             b.Property<bool>("IsActive").HasColumnType("bit");
             b.Property<string>("Name").IsRequired().HasMaxLength(150).HasColumnType("nvarchar(150)");
+            b.Property<string>("RegistrationNumber").HasMaxLength(50).HasColumnType("nvarchar(50)");
             b.HasKey("Id");
             b.HasIndex("Name").IsUnique();
             b.ToTable("Manufacturers");
@@ -70,6 +70,34 @@ partial class AgroControlDbContextModelSnapshot : ModelSnapshot
             b.ToTable("AgriculturalInputs");
         });
 
+        modelBuilder.Entity("AgroControl.Domain.Inventory.StockLot", b =>
+        {
+            b.Property<Guid>("Id").ValueGeneratedNever().HasColumnType("uniqueidentifier");
+            b.Property<Guid>("AgriculturalInputId").HasColumnType("uniqueidentifier");
+            b.Property<decimal>("CurrentQuantity").HasPrecision(18, 6).HasColumnType("decimal(18,6)");
+            b.Property<DateOnly?>("ExpirationDate").HasColumnType("date");
+            b.Property<bool>("IsActive").HasColumnType("bit");
+            b.Property<string>("LotNumber").IsRequired().HasMaxLength(100).HasColumnType("nvarchar(100)");
+            b.HasKey("Id");
+            b.HasIndex("ExpirationDate");
+            b.HasIndex("AgriculturalInputId", "LotNumber").IsUnique();
+            b.ToTable("StockLots");
+        });
+
+        modelBuilder.Entity("AgroControl.Domain.Inventory.StockMovement", b =>
+        {
+            b.Property<Guid>("Id").ValueGeneratedNever().HasColumnType("uniqueidentifier");
+            b.Property<string>("Notes").HasMaxLength(500).HasColumnType("nvarchar(500)");
+            b.Property<DateTimeOffset>("OccurredAt").HasColumnType("datetimeoffset");
+            b.Property<decimal>("Quantity").HasPrecision(18, 6).HasColumnType("decimal(18,6)");
+            b.Property<Guid>("StockLotId").HasColumnType("uniqueidentifier");
+            b.Property<int>("Type").HasColumnType("int");
+            b.HasKey("Id");
+            b.HasIndex("OccurredAt");
+            b.HasIndex("StockLotId");
+            b.ToTable("StockMovements");
+        });
+
         modelBuilder.Entity("AgroControl.Domain.Catalog.AgriculturalInput", b =>
         {
             b.HasOne("AgroControl.Domain.Catalog.InputCategory", null)
@@ -87,6 +115,24 @@ partial class AgroControlDbContextModelSnapshot : ModelSnapshot
             b.HasOne("AgroControl.Domain.Catalog.MeasurementUnit", null)
                 .WithMany()
                 .HasForeignKey("MeasurementUnitId")
+                .OnDelete(DeleteBehavior.Restrict)
+                .IsRequired();
+        });
+
+        modelBuilder.Entity("AgroControl.Domain.Inventory.StockLot", b =>
+        {
+            b.HasOne("AgroControl.Domain.Catalog.AgriculturalInput", null)
+                .WithMany()
+                .HasForeignKey("AgriculturalInputId")
+                .OnDelete(DeleteBehavior.Restrict)
+                .IsRequired();
+        });
+
+        modelBuilder.Entity("AgroControl.Domain.Inventory.StockMovement", b =>
+        {
+            b.HasOne("AgroControl.Domain.Inventory.StockLot", null)
+                .WithMany("Movements")
+                .HasForeignKey("StockLotId")
                 .OnDelete(DeleteBehavior.Restrict)
                 .IsRequired();
         });

@@ -18,12 +18,17 @@ public sealed class Manufacturer : Entity
 
     public static Manufacturer Create(string name, string? registrationNumber = null)
     {
-        var normalizedName = Guard.AgainstNullOrWhiteSpace(name, nameof(name), 150);
-        var normalizedRegistration = string.IsNullOrWhiteSpace(registrationNumber)
+        var manufacturer = new Manufacturer(Guid.NewGuid(), string.Empty, null);
+        manufacturer.Update(name, registrationNumber);
+        return manufacturer;
+    }
+
+    public void Update(string name, string? registrationNumber)
+    {
+        Name = Guard.AgainstNullOrWhiteSpace(name, nameof(name), 150);
+        RegistrationNumber = string.IsNullOrWhiteSpace(registrationNumber)
             ? null
             : registrationNumber.Trim();
-
-        return new Manufacturer(Guid.NewGuid(), normalizedName, normalizedRegistration);
     }
 
     public void Rename(string name) => Name = Guard.AgainstNullOrWhiteSpace(name, nameof(name), 150);

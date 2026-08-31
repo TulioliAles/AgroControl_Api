@@ -18,10 +18,15 @@ public sealed class InputCategory : Entity
 
     public static InputCategory Create(string name, string? description = null)
     {
-        var normalizedName = Guard.AgainstNullOrWhiteSpace(name, nameof(name), 100);
-        var normalizedDescription = string.IsNullOrWhiteSpace(description) ? null : description.Trim();
+        var category = new InputCategory(Guid.NewGuid(), string.Empty, null);
+        category.Update(name, description);
+        return category;
+    }
 
-        return new InputCategory(Guid.NewGuid(), normalizedName, normalizedDescription);
+    public void Update(string name, string? description)
+    {
+        Name = Guard.AgainstNullOrWhiteSpace(name, nameof(name), 100);
+        Description = string.IsNullOrWhiteSpace(description) ? null : description.Trim();
     }
 
     public void Rename(string name) => Name = Guard.AgainstNullOrWhiteSpace(name, nameof(name), 100);

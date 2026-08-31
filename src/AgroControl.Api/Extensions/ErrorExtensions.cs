@@ -12,10 +12,15 @@ public static class ErrorExtensions
             "Catalog.InputCategory.NameAlreadyExists" => StatusCodes.Status409Conflict,
             "Catalog.Manufacturer.NameAlreadyExists" => StatusCodes.Status409Conflict,
             "Catalog.MeasurementUnit.SymbolAlreadyExists" => StatusCodes.Status409Conflict,
+            "Inventory.StockLot.AlreadyExists" => StatusCodes.Status409Conflict,
+            "Inventory.Movement.InsufficientStock" => StatusCodes.Status409Conflict,
+            "Inventory.StockLot.Inactive" => StatusCodes.Status409Conflict,
             "Catalog.AgriculturalInput.NotFound" => StatusCodes.Status404NotFound,
             "Catalog.InputCategory.NotFound" => StatusCodes.Status404NotFound,
             "Catalog.Manufacturer.NotFound" => StatusCodes.Status404NotFound,
             "Catalog.MeasurementUnit.NotFound" => StatusCodes.Status404NotFound,
+            "Inventory.StockLot.NotFound" => StatusCodes.Status404NotFound,
+            "Inventory.AgriculturalInput.NotAvailable" => StatusCodes.Status404NotFound,
             _ => StatusCodes.Status400BadRequest
         };
 

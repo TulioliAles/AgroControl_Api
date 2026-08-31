@@ -6,6 +6,7 @@ using AgroControl.Application.Catalog.CreateReferenceData;
 using AgroControl.Application.Catalog.GetAgriculturalInputs;
 using AgroControl.Application.Catalog.MaintainReferenceData;
 using AgroControl.Application.Catalog.UpdateAgriculturalInput;
+using AgroControl.Application.Inventory;
 using AgroControl.Infrastructure;
 using Serilog;
 
@@ -31,6 +32,9 @@ try
     builder.Services.AddScoped<InputCategoryMaintenanceHandler>();
     builder.Services.AddScoped<ManufacturerMaintenanceHandler>();
     builder.Services.AddScoped<MeasurementUnitMaintenanceHandler>();
+    builder.Services.AddScoped<CreateStockLotHandler>();
+    builder.Services.AddScoped<RecordStockMovementHandler>();
+    builder.Services.AddScoped<StockLotQueryHandler>();
     builder.Services.AddInfrastructure(builder.Configuration);
 
     var app = builder.Build();
@@ -47,6 +51,7 @@ try
     app.MapHealthChecks("/health");
     app.MapAgriculturalInputEndpoints();
     app.MapCatalogReferenceDataEndpoints();
+    app.MapStockLotEndpoints();
 
     if (app.Environment.IsEnvironment("IntegrationTests"))
     {

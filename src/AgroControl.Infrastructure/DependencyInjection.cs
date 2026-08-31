@@ -1,5 +1,6 @@
 using AgroControl.Application.Abstractions.Data;
 using AgroControl.Application.Catalog.Repositories;
+using AgroControl.Application.Inventory;
 using AgroControl.Infrastructure.Persistence;
 using AgroControl.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -30,6 +31,7 @@ public static class DependencyInjection
         services.AddScoped<IInputCategoryRepository, InputCategoryRepository>();
         services.AddScoped<IManufacturerRepository, ManufacturerRepository>();
         services.AddScoped<IMeasurementUnitRepository, MeasurementUnitRepository>();
+        services.AddScoped<IStockLotRepository, StockLotRepository>();
 
         return services;
     }
